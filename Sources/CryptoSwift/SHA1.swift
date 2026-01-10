@@ -45,6 +45,7 @@ public final class SHA1: DigestType {
     }
   }
 
+  @inlinable
   public func callAsFunction(_ bytes: Array<UInt8>) -> Array<UInt8> {
     calculate(for: bytes)
   }
