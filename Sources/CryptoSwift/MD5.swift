@@ -14,24 +14,32 @@
 //
 
 public final class MD5: DigestType {
+  @usableFromInline
   static let blockSize: Int = 64
+  @usableFromInline
   static let digestLength: Int = 16 // 128 / 8
-  fileprivate static let hashInitialValue: Array<UInt32> = [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476]
+  @usableFromInline
+  static let hashInitialValue: Array<UInt32> = [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476]
 
-  fileprivate var accumulated = Array<UInt8>()
-  fileprivate var processedBytesTotalCount: Int = 0
-  fileprivate var accumulatedHash: Array<UInt32> = MD5.hashInitialValue
+  @usableFromInline
+  var accumulated = Array<UInt8>()
+  @usableFromInline
+  var processedBytesTotalCount: Int = 0
+  @usableFromInline
+  var accumulatedHash: Array<UInt32> = MD5.hashInitialValue
 
-  /** specifies the per-round shift amounts */
-  private let s: Array<UInt32> = [
+  /** specifies the per-round shift amounts - static for better optimization */
+  @usableFromInline
+  static let s: Array<UInt32> = [
     7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
     5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20,
     4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23,
     6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21
   ]
 
-  /** binary integer part of the sines of integers (Radians) */
-  private let k: Array<UInt32> = [
+  /** binary integer part of the sines of integers (Radians) - static for better optimization */
+  @usableFromInline
+  static let k: Array<UInt32> = [
     0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
     0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
     0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be,
@@ -53,6 +61,7 @@ public final class MD5: DigestType {
   public init() {
   }
 
+  @inlinable
   public func calculate(for bytes: Array<UInt8>) -> Array<UInt8> {
     do {
       return try update(withBytes: bytes.slice, isLast: true)
@@ -61,13 +70,15 @@ public final class MD5: DigestType {
     }
   }
 
+  @inlinable
   public func callAsFunction(_ bytes: Array<UInt8>) -> Array<UInt8> {
     calculate(for: bytes)
   }
 
 
   // mutating currentHash in place is way faster than returning new result
-  fileprivate func process(block chunk: ArraySlice<UInt8>, currentHash: inout Array<UInt32>) {
+  @usableFromInline
+  func process(block chunk: ArraySlice<UInt8>, currentHash: inout Array<UInt32>) {
     assert(chunk.count == 16 * 4)
 
     // Initialize hash value for this chunk:
@@ -79,7 +90,7 @@ public final class MD5: DigestType {
     var dTemp: UInt32 = 0
 
     // Main loop
-    for j in 0..<self.k.count {
+    for j in 0..<MD5.k.count {
       var g = 0
       var F: UInt32 = 0
 
@@ -111,7 +122,7 @@ public final class MD5: DigestType {
       Mg |= UInt32(chunk[chunk.startIndex &+ gAdvanced &+ 2]) << 16
       Mg |= UInt32(chunk[chunk.startIndex &+ gAdvanced &+ 3]) << 24
 
-      B = B &+ rotateLeft(A &+ F &+ self.k[j] &+ Mg, by: self.s[j])
+      B = B &+ rotateLeft(A &+ F &+ MD5.k[j] &+ Mg, by: MD5.s[j])
       A = dTemp
     }
 
@@ -123,6 +134,7 @@ public final class MD5: DigestType {
 }
 
 extension MD5: Updatable {
+  @inlinable
   public func update(withBytes bytes: ArraySlice<UInt8>, isLast: Bool = false) throws -> Array<UInt8> {
     self.accumulated += bytes
 

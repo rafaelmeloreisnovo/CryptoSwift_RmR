@@ -33,6 +33,7 @@ public final class Poly1305: Authenticator {
     self.key = SecureBytes(bytes: key)
   }
 
+  @inline(__always)
   private func squeeze(h: inout Array<UInt32>) {
     assert(h.count == 17)
     var u: UInt32 = 0
@@ -56,6 +57,7 @@ public final class Poly1305: Authenticator {
     h[16] = u
   }
 
+  @inline(__always)
   private func add(h: inout Array<UInt32>, c: Array<UInt32>) {
     assert(h.count == 17 && c.count == 17)
 
@@ -67,6 +69,7 @@ public final class Poly1305: Authenticator {
     }
   }
 
+  @inline(__always)
   private func mulmod(h: inout Array<UInt32>, r: Array<UInt32>) {
     var hr = Array<UInt32>(repeating: 0, count: 17)
     var u: UInt32 = 0
@@ -84,6 +87,7 @@ public final class Poly1305: Authenticator {
     self.squeeze(h: &h)
   }
 
+  @inline(__always)
   private func freeze(h: inout Array<UInt32>) {
     let horig = h
     self.add(h: &h, c: [5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 252])
@@ -94,7 +98,7 @@ public final class Poly1305: Authenticator {
   }
 
   /// the key is partitioned into two parts, called "r" and "s"
-  fileprivate func onetimeauth(message input: Array<UInt8>, key k: Array<UInt8>) -> Array<UInt8> {
+  private func onetimeauth(message input: Array<UInt8>, key k: Array<UInt8>) -> Array<UInt8> {
     // clamp
     var r = Array<UInt32>(repeating: 0, count: 17)
     var h = Array<UInt32>(repeating: 0, count: 17)

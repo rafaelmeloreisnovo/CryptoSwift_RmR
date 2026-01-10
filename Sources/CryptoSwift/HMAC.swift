@@ -28,6 +28,7 @@ public final class HMAC: Authenticator {
     @available(*, deprecated, message: "Use sha2(variant) instead.")
     case sha256, sha384, sha512
 
+    @usableFromInline
     var digestLength: Int {
       switch self {
         case .sha1:
@@ -47,6 +48,7 @@ public final class HMAC: Authenticator {
       }
     }
 
+    @usableFromInline
     func calculateHash(_ bytes: Array<UInt8>) -> Array<UInt8> {
       switch self {
         case .sha1:
@@ -66,6 +68,7 @@ public final class HMAC: Authenticator {
       }
     }
 
+    @usableFromInline
     func blockSize() -> Int {
       switch self {
         case .md5:
@@ -86,7 +89,9 @@ public final class HMAC: Authenticator {
     }
   }
 
+  @usableFromInline
   var key: Array<UInt8>
+  @usableFromInline
   let variant: Variant
 
   public init(key: Array<UInt8>, variant: HMAC.Variant = .md5) {
@@ -105,6 +110,7 @@ public final class HMAC: Authenticator {
 
   // MARK: Authenticator
 
+  @inlinable
   public func authenticate(_ bytes: Array<UInt8>) throws -> Array<UInt8> {
     var opad = Array<UInt8>(repeating: 0x5c, count: variant.blockSize())
     for idx in self.key.indices {

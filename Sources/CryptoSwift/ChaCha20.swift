@@ -26,7 +26,8 @@ public final class ChaCha20: BlockCipher {
   public let keySize: Int
 
   fileprivate let key: Key
-  fileprivate var counter: Array<UInt8>
+  @usableFromInline
+  var counter: Array<UInt8>
 
   public convenience init(key: Array<UInt8>, iv nonce: Array<UInt8>) throws {
     try self.init(key: key, iv: nonce, blockCounter: 0)
@@ -52,7 +53,8 @@ public final class ChaCha20: BlockCipher {
   }
 
   /// https://tools.ietf.org/html/rfc7539#section-2.3.
-  fileprivate func core(block: inout Array<UInt8>, counter: Array<UInt8>, key: Array<UInt8>) {
+  @usableFromInline
+  func core(block: inout Array<UInt8>, counter: Array<UInt8>, key: Array<UInt8>) {
     precondition(block.count == ChaCha20.blockSize)
     precondition(counter.count == 16)
     precondition(key.count == 32)
@@ -212,6 +214,7 @@ public final class ChaCha20: BlockCipher {
   }
 
   // XORKeyStream
+  @usableFromInline
   func process(bytes: ArraySlice<UInt8>, counter: inout Array<UInt8>, key: Array<UInt8>) -> Array<UInt8> {
     precondition(counter.count == 16)
     precondition(key.count == 32)
