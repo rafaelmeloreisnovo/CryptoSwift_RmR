@@ -13,7 +13,7 @@
 //  - This notice may not be removed or altered from any source or binary distribution.
 //
 
-/// Array of bytes. Optimized to use stack-based operations.
+/// Array of bytes. Converts integer values to byte arrays efficiently.
 ///
 /// - parameter value: integer value
 /// - parameter length: length of output array. By default size of value type

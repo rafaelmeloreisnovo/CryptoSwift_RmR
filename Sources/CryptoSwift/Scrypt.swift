@@ -30,6 +30,7 @@ public final class Scrypt {
   private let salt: SecureBytes
   private let password: SecureBytes
   private let blocksize: Int // 128 * r
+  /// Temporary buffer for salsa20/8 operations. Allocated in init and deallocated in deinit.
   private let salsaBlock: UnsafeMutableRawPointer
   private let dkLen: Int
   private let N: Int
