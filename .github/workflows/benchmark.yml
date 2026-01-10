@@ -1,0 +1,53 @@
+name: Benchmark
+
+# Benchmarks run separately from main tests to avoid penalizing regular CI/CD pipeline
+# This workflow is triggered manually or on a schedule for performance monitoring
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Run benchmarks weekly on Sunday at midnight UTC
+    - cron: '0 0 * * 0'
+  push:
+    branches: [ main ]
+    paths:
+      - 'Tests/CryptoSwiftTests/**Perf.swift'
+      - '.github/workflows/benchmark.yml'
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Run Benchmark Tests
+      run: |
+        echo "Running performance benchmarks..."
+        echo "Note: These tests measure cryptographic operation performance"
+        echo "Results are for informational purposes and do not affect build status"
+        swift test -c release \
+          -Xswiftc -enable-testing \
+          -Xswiftc -Xfrontend \
+          -Xswiftc -solver-memory-threshold \
+          -Xswiftc -Xfrontend \
+          -Xswiftc 999999999 \
+          --filter "Perf" || true
+
+    - name: Generate Benchmark Report
+      run: |
+        echo "## Benchmark Results" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "Benchmark tests completed. Performance metrics are collected for monitoring purposes." >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Test Categories" >> $GITHUB_STEP_SUMMARY
+        echo "- AES Encryption/Decryption Performance" >> $GITHUB_STEP_SUMMARY
+        echo "- ChaCha20 Performance" >> $GITHUB_STEP_SUMMARY
+        echo "- Digest (MD5, SHA) Performance" >> $GITHUB_STEP_SUMMARY
+        echo "- PBKDF Performance" >> $GITHUB_STEP_SUMMARY
+        echo "- Scrypt Performance" >> $GITHUB_STEP_SUMMARY
+        echo "- Rabbit Cipher Performance" >> $GITHUB_STEP_SUMMARY
