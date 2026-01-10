@@ -451,7 +451,7 @@ let salt = Array("saltvalue".utf8)
 let derivedKey = try PKCS5.PBKDF2(
     password: password,
     salt: salt,
-    iterations: 100_000,  // OWASP recommendation
+    iterations: 100_000,  // Recommended minimum for password hashing
     keyLength: 32,        // 256 bits
     variant: .sha2(.sha256)
 ).calculate()
@@ -823,6 +823,6 @@ See [CHANGELOG](./CHANGELOG) for complete version history.
 
 **Made with ❤️ in Pure Swift**
 
-[Report Bug](https://github.com/krzyzanowskim/CryptoSwift/discussions) · [Request Feature](https://github.com/krzyzanowskim/CryptoSwift/discussions) · [Documentation](./Documentation)
+[Report Bug](https://github.com/krzyzanowskim/CryptoSwift/discussions) · [Request Feature](https://github.com/krzyzanowskim/CryptoSwift/discussions) · [Documentation](./Documentation/ModuleProfessional)
 
 </div>
