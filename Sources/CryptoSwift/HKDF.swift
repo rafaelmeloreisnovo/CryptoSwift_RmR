@@ -16,20 +16,6 @@
 //  https://www.ietf.org/rfc/rfc5869.txt
 //
 
-#if canImport(Darwin)
-import Darwin
-#elseif canImport(Android)
-import Android
-#elseif canImport(Glibc)
-import Glibc
-#elseif canImport(Musl)
-import Musl
-#elseif canImport(ucrt)
-import ucrt
-#elseif canImport(WASILibc)
-import WASILibc
-#endif
-
 /// A key derivation function.
 ///
 /// HKDF   - HMAC-based Extract-and-Expand Key Derivation Function.
@@ -56,9 +42,9 @@ public struct HKDF {
     }
 
     let dkLen = keyLength ?? variant.digestLength
-    let keyLengthFinal = Double(dkLen)
-    let hLen = Double(variant.digestLength)
-    let numBlocks = Int(ceil(keyLengthFinal / hLen)) // l = ceil(keyLength / hLen)
+    let hLen = variant.digestLength
+    // Integer ceiling division: (dkLen + hLen - 1) / hLen
+    let numBlocks = (dkLen + hLen - 1) / hLen // l = ceil(keyLength / hLen)
     guard numBlocks <= 255 else {
       throw Error.derivedKeyTooLong
     }

@@ -129,10 +129,10 @@ public final class Checksum {
     //
   }
 
-  /// Polynomial: 0xEDB88320 (Reversed) - IEEE
+  /// Polynomial: 0xEDB88320 (Reversed) - IEEE - Private static implementation
   @inlinable
-  func crc32(_ message: Array<UInt8>, seed: UInt32? = nil, reflect: Bool = true) -> UInt32 {
-    var crc: UInt32 = seed != nil ? seed! : 0xFFFF_FFFF
+  static func _crc32(_ message: Array<UInt8>, seed: UInt32? = nil, reflect: Bool = true) -> UInt32 {
+    var crc: UInt32 = seed ?? 0xFFFF_FFFF
     for chunk in message.batched(by: 256) {
       for b in chunk {
         let idx = Int((crc ^ UInt32(reflect ? b : reversed(b))) & 0xFF)
@@ -142,10 +142,10 @@ public final class Checksum {
     return (reflect ? crc : reversed(crc)) ^ 0xFFFF_FFFF
   }
 
-  /// Polynomial: 0x82F63B78 (Reversed) - Castagnoli
+  /// Polynomial: 0x82F63B78 (Reversed) - Castagnoli - Private static implementation
   @inlinable
-  func crc32c(_ message: Array<UInt8>, seed: UInt32? = nil, reflect: Bool = true) -> UInt32 {
-    var crc: UInt32 = seed != nil ? seed! : 0xFFFF_FFFF
+  static func _crc32c(_ message: Array<UInt8>, seed: UInt32? = nil, reflect: Bool = true) -> UInt32 {
+    var crc: UInt32 = seed ?? 0xFFFF_FFFF
     for chunk in message.batched(by: 256) {
       for b in chunk {
         let idx = Int((crc ^ UInt32(reflect ? b : reversed(b))) & 0xFF)
@@ -155,16 +155,34 @@ public final class Checksum {
     return (reflect ? crc : reversed(crc)) ^ 0xFFFF_FFFF
   }
 
-  /// Polynomial: 0xA001 (Reversed) - IBM
+  /// Polynomial: 0xA001 (Reversed) - IBM - Private static implementation
   @inlinable
-  func crc16(_ message: Array<UInt8>, seed: UInt16? = nil) -> UInt16 {
-    var crc: UInt16 = seed != nil ? seed! : 0x0000
+  static func _crc16(_ message: Array<UInt8>, seed: UInt16? = nil) -> UInt16 {
+    var crc: UInt16 = seed ?? 0x0000
     for chunk in message.batched(by: 256) {
       for b in chunk {
         crc = (crc >> 8) ^ Checksum.table16[Int((crc ^ UInt16(b)) & 0xFF)]
       }
     }
     return crc
+  }
+
+  /// Polynomial: 0xEDB88320 (Reversed) - IEEE
+  @inlinable
+  func crc32(_ message: Array<UInt8>, seed: UInt32? = nil, reflect: Bool = true) -> UInt32 {
+    Checksum._crc32(message, seed: seed, reflect: reflect)
+  }
+
+  /// Polynomial: 0x82F63B78 (Reversed) - Castagnoli
+  @inlinable
+  func crc32c(_ message: Array<UInt8>, seed: UInt32? = nil, reflect: Bool = true) -> UInt32 {
+    Checksum._crc32c(message, seed: seed, reflect: reflect)
+  }
+
+  /// Polynomial: 0xA001 (Reversed) - IBM
+  @inlinable
+  func crc16(_ message: Array<UInt8>, seed: UInt16? = nil) -> UInt16 {
+    Checksum._crc16(message, seed: seed)
   }
 }
 
@@ -180,7 +198,7 @@ public extension Checksum {
   /// - returns: Calculated code
   @inlinable
   static func crc32(_ message: Array<UInt8>, seed: UInt32? = nil, reflect: Bool = true) -> UInt32 {
-    Checksum().crc32(message, seed: seed, reflect: reflect)
+    _crc32(message, seed: seed, reflect: reflect)
   }
 
   /// Calculate CRC32C
@@ -192,7 +210,7 @@ public extension Checksum {
   /// - returns: Calculated code
   @inlinable
   static func crc32c(_ message: Array<UInt8>, seed: UInt32? = nil, reflect: Bool = true) -> UInt32 {
-    Checksum().crc32c(message, seed: seed, reflect: reflect)
+    _crc32c(message, seed: seed, reflect: reflect)
   }
 
   /// Calculate CRC16
@@ -203,6 +221,6 @@ public extension Checksum {
   /// - returns: Calculated code
   @inlinable
   static func crc16(_ message: Array<UInt8>, seed: UInt16? = nil) -> UInt16 {
-    Checksum().crc16(message, seed: seed)
+    _crc16(message, seed: seed)
   }
 }

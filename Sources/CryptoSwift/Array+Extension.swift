@@ -71,13 +71,14 @@ extension Array where Element == UInt8 {
   }
 
   public func toHexString() -> String {
-    `lazy`.reduce(into: "") {
-      var s = String($1, radix: 16)
-      if s.count == 1 {
-        s = "0" + s
-      }
-      $0 += s
+    let hexDigits = Array("0123456789abcdef".utf8)
+    var result = [UInt8]()
+    result.reserveCapacity(count * 2)
+    for byte in self {
+      result.append(hexDigits[Int(byte >> 4)])
+      result.append(hexDigits[Int(byte & 0x0F)])
     }
+    return String(decoding: result, as: UTF8.self)
   }
 }
 

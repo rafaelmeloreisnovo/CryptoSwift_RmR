@@ -30,11 +30,16 @@ public final class Scrypt {
   private let salt: SecureBytes
   private let password: SecureBytes
   private let blocksize: Int // 128 * r
-  private let salsaBlock = UnsafeMutableRawPointer.allocate(byteCount: 64, alignment: 64)
+  /// Temporary buffer for salsa20/8 operations. Allocated in init and deallocated in deinit.
+  private let salsaBlock: UnsafeMutableRawPointer
   private let dkLen: Int
   private let N: Int
   private let r: Int
   private let p: Int
+
+  deinit {
+    salsaBlock.deallocate()
+  }
 
   /// - parameters:
   ///   - password: password
@@ -65,6 +70,7 @@ public final class Scrypt {
     self.password = SecureBytes(bytes: password)
     self.salt = SecureBytes(bytes: salt)
     self.dkLen = dkLen
+    self.salsaBlock = UnsafeMutableRawPointer.allocate(byteCount: 64, alignment: 64)
   }
 
   /// Runs the key derivation function with a specific password.
