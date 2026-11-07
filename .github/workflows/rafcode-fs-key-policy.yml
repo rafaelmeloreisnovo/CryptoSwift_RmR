@@ -1,0 +1,19 @@
+name: RAFCODE freestanding key-policy scoped gate
+on:
+  pull_request:
+    paths:
+      - "rafcode/freestanding/**"
+      - ".github/workflows/rafcode-fs-key-policy.yml"
+  push:
+    paths:
+      - "rafcode/freestanding/**"
+      - ".github/workflows/rafcode-fs-key-policy.yml"
+jobs:
+  policy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2 pinned
+      - name: Verify isolated module with GCC and Clang
+        run: sh rafcode/freestanding/verify.sh
